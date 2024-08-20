@@ -1,0 +1,67 @@
+#updating schema
+
+type Event
+  @model
+  @searchable
+  @aws_iam
+  @aws_cognito_user_pools
+  @auth(
+    rules: [
+      {allow: owner, operations: [create, read, update, delete]}
+      {allow: public, provider: iam, operations: [read, delete]}
+      {allow: groups, groups: ["user"], operations: [read]}
+    ]
+  ) {
+  id: ID!
+  name: String!
+  date: AWSDate!
+  duration: String
+  time: AWSTime
+  featured: Boolean
+  eventType: typeEnum!
+  eventPlatform: platfromEnum!
+  url: String
+}
+
+enum typeEnum {
+  hackathon
+  internship
+  contest
+  job
+  others
+}
+
+enum platfromEnum {
+  gfg
+  leetcode
+  codeChef
+  codeForces
+  unstop
+  others
+}
+
+type Bookmark
+  @model
+  @searchable
+  @aws_iam
+  @aws_cognito_user_pools
+  @auth(rules: [{allow: owner}]) {
+  id: ID!
+  eventID: ID!
+  eventName: String!
+  event: Event @hasOne(fields: ["eventID"])
+}
+
+type Todo
+  @model
+  @searchable
+  @aws_iam
+  @aws_cognito_user_pools
+  @auth(rules: [{allow: owner}]) {
+  id: ID!
+  description: String
+  date: AWSDate!
+  eventID: ID!
+  eventName: String!
+  completed: Boolean
+}
